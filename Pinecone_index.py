@@ -9,14 +9,14 @@ class PineconeIndex:
         self.index = self.connect_to_index(index_name)
 
     def connect_to_index(self, index_name):
-        """Connects to pinecone index matching the user-provided index_name. If the index doesn't exist, create it with name index_name"""
+        """Connects to pinecone index named index_name. If the index doesn't exist, create it with name index_name"""
         pinecone.init(api_key="7a96d287-9c61-4335-adf7-636892d6e2a5",
                       environment='us-west1-gcp')
         # check if index already exists, if not we create it
         if index_name not in pinecone.list_indexes():
             print(
                 f'Index with name "{index_name}" not found. Creating index with name "{index_name}"...')
-            # TODO: Don't hardcode dim 384. Get the length of the embedding
+            # TODO: Don't hardcode dim 384. Get the length of the embedding retruend by the encoder model
             pinecone.create_index(name=index_name, dimension=384)
             print("Created index with name ", index_name)
         # connect to index
@@ -27,16 +27,14 @@ class PineconeIndex:
     def upsert(self, data: List[Dict], namespace: str = None):
         """
         data is a list of dictionaries containing a single context and its associated metadata
-        data requires at least the following keys (can also contain metadata):
-          'id' -> string
-         'context' -> string
-         'encoding' -> List[Float]
+        data requires at least the following keys:
+            'id' -> string
+            'context' -> string
+            'encoding' -> List[Float]
 
-        media vectors (ie youtube videos and podcasts) can also have a 'start (ms)' field, representing the timestamp of the paragraph/sentence
+        data can also contain metadata items. ie media vectors (youtube videos and podcasts) can also have a 'start (ms)' field, 
+        representing the timestamp of the paragraph/sentence
         """
-
-        # upserts = [(v['id'], v['encoding'], {'context': v['context'], 'start (ms)': v['start (ms)']}) for v in data]
-        # upserts = [(v['encoding'], {'context': v['context']}) for v in data]
 
         # now upsert in chunks
         for i in tqdm(range(0, len(data), 50)):

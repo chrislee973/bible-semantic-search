@@ -4,17 +4,16 @@ from Pinecone_index import PineconeIndex
 
 
 class Controller:
+
     def __init__(self, retriever_model, index: PineconeIndex):
         self.retriever_model = retriever_model
         self.index = index
-        # self.reader_pipeline = reader_pipeline
-        # self.retriever = retriever
-        # self.reader = reader
+        # self.embedding_dims = self.get_pinecone_embedding_dims()
 
     # TRANSFORMING DATA
     def get_embedding(self, x: str):
         """
-        Returns the vector embedding of the string x
+        Computes and returns the vector embedding of the string x
         """
         return self.retriever_model.encode(x).tolist()
 
@@ -22,7 +21,7 @@ class Controller:
         """
         Adds the encoding of the context to each dictionary in data and adds the encoding as a value to each dict item (each item representing a specific context) in the data list of dicts.
         Returns this new modified list of dictionaries. Modifies in-place
-        Example data:
+        Example input data:
           [
             {'context': 'Hello World!', 'id': '123'},
            {'context': 'My name is Chris', 'id': '988767'}
@@ -42,11 +41,10 @@ class Controller:
         return list(map(encode_context, data))
 
     # INTERFACING WITH INDEX
-
-    def upsert(self, data: List[Dict], namespace: str = None, metadata_fields=[]):
+    def upsert(self, data: List[Dict], namespace: str, metadata_fields=[]):
         """
-        Upserts the un-encoded, raw data to the provided namespace in the Pinecone Index.
-        data is a list of dictionaries containing a single context and its associated metadata.
+        Transforms the un-encoded, raw data and upserts them to the Pinecone Index under the provided namespace.
+        data is a list of dictionaries, each dictionary containing a single context and its associated metadata.
         data requires at least the following keys (can also contain metadata):
           Required keys in data:
             'id' -> string
@@ -56,14 +54,27 @@ class Controller:
         """
         encoded_data = self.transform_data(
             data)  # add encoded context as a value for each dictionary in data
+        # the original context is added as a metadata field by default. Additional metadata fields can be specified by the argument 'metadata_fields'
         metadata_fields = ['context', *metadata_fields]
+        # once we have the encoded data, pull the relevant fields from each context dictionary
         upserts = [(v['id'], v['encoding'], {
                     field: v[field] for field in metadata_fields}) for v in encoded_data]
-        # once we have the encoded data, pull the relevant fields from each context dictionary, and upsert
         self.index.upsert(upserts, namespace)
 
     def delete_namespace(self, namespace):
         self.index.delete_namespace(namespace)
+
+    def list_namespaces(self):
+        """
+        Lists all the namespaces in the current index
+        """
+        return self.index.index.describe_index_stats()['namespaces']
+
+    def get_pinecone_embedding_dims(self):
+        """
+        Queries the Pinecone index for the embedding dimensions
+        """
+        return self.index.index.describe_index_stats()['dimension']
 
     # def grab_contexts(self, results: Dict) -> List[str]:
     #       """
@@ -78,7 +89,8 @@ class Controller:
         If verbose is true, will return the scores, id, and other metadata (such as start timestamp for media documents) as well.
 
         Example return object when verbose =  True:
-          {'results': [{'matches': [{'id': '4mkh709',
+          [
+            {'id': '4mkh709',
                                'metadata': {'context': 'The father of the modern '
                                                        'synthesizer is undoubtedly '
                                                        'Dr. Bob Mogue.',
@@ -97,8 +109,8 @@ class Controller:
                                                        'the mini mode.',
                                             'start (ms)': 7650.0},
                                'score': 0.196624324,
-                               'values': []}],
-                  'namespace': 'NewMoog'}]}
+                               'values': []},
+            ]
         Example return object when verbose = False:
           [
             'The father of the modern synthesizer is undoubtedly Dr. Bob Mogue.',
@@ -110,7 +122,7 @@ class Controller:
         # results =  self.retriever.query(self.index, query_emb, top_k, namespace)
         results = self.index.query(query_emb, top_k, namespace)
         if verbose:
-            return results
+            return results['results'][0]['matches']
         elif verbose == False:
             # return self.retriever.grab_contexts(results)
             # return only the context for each result
