@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Union
 
 from Pinecone_index import PineconeIndex
 
@@ -82,7 +82,7 @@ class Controller:
     #       """
     #       return [x['metadata']['context'] for x in results['results'][0]['matches']]
 
-    def query(self, query: str, top_k=5, namespace=None, verbose=False):
+    def query(self, query: str, top_k=5, namespace=None, verbose=False) -> Union[List[Dict], List[str]]:
         """
         Returns the the top k most similar contexts to the query in the Pinecone index, ranked in decreasing order of similarity.
         If verbose is false, will only return the contexts. 
@@ -90,26 +90,30 @@ class Controller:
 
         Example return object when verbose =  True:
           [
-            {'id': '4mkh709',
-                               'metadata': {'context': 'The father of the modern '
-                                                       'synthesizer is undoubtedly '
-                                                       'Dr. Bob Mogue.',
-                                            'start (ms)': 250.0},
-                               'score': 0.406163871,
-                               'values': []},
-                              {'id': '3rzq85k',
-                               'metadata': {'context': 'The Mogue modular '
-                                                       'synthesizer first became '
-                                                       'widely heard in 1968 on a '
-                                                       'record called Switched On '
-                                                       'Bark by Walter Now, Wendy '
-                                                       'Carlos. It was Big Brother '
-                                                       'to the best known '
-                                                       'synthesizer of all time, '
-                                                       'the mini mode.',
-                                            'start (ms)': 7650.0},
-                               'score': 0.196624324,
-                               'values': []},
+            {
+              'id': '4mkh709',
+              'metadata': {'context': 'The father of the modern '
+                                      'synthesizer is undoubtedly '
+                                      'Dr. Bob Mogue.',
+                          'start (ms)': 250.0},
+              'score': 0.406163871,
+              'values': []
+              },
+            {
+              'id': '3rzq85k',
+              'metadata': {'context': 'The Mogue modular '
+                                      'synthesizer first became '
+                                      'widely heard in 1968 on a '
+                                      'record called Switched On '
+                                      'Bark by Walter Now, Wendy '
+                                      'Carlos. It was Big Brother '
+                                      'to the best known '
+                                      'synthesizer of all time, '
+                                      'the mini mode.',
+                          'start (ms)': 7650.0},
+              'score': 0.196624324,
+              'values': []
+              },
             ]
         Example return object when verbose = False:
           [
