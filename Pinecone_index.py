@@ -1,7 +1,13 @@
 from typing import List, Dict
 from tqdm.auto import tqdm  # for progress bar
+from dotenv import load_dotenv
 
 import pinecone
+import streamlit as st
+
+load_dotenv()
+
+PINECONE_KEY = st.secrets['PINECONE_API_KEY']
 
 
 class PineconeIndex:

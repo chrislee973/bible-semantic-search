@@ -11,6 +11,7 @@ streamlit = "*"
 sentence-transformers = "*"
 pinecone-client = "*"
 youtube-dl = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.8"

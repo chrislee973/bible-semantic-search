@@ -3,6 +3,13 @@ import requests
 from time import sleep
 import random
 
+from dotenv import load_dotenv
+import streamlit as st
+
+load_dotenv()
+
+ASSEMBLY_KEY = st.secrets["ASSEMBLY_API_KEY"]
+
 
 class AssemblyTranscript:
     """
