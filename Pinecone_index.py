@@ -1,6 +1,7 @@
 from typing import List, Dict
 from tqdm.auto import tqdm  # for progress bar
 from dotenv import load_dotenv
+import os
 
 import pinecone
 import streamlit as st
@@ -8,6 +9,7 @@ import streamlit as st
 load_dotenv()
 
 PINECONE_KEY = st.secrets['PINECONE_API_KEY']
+# PINECONE_KEY = os.environ.get("PINECONE_API_KEY")
 
 
 class PineconeIndex:
@@ -16,7 +18,7 @@ class PineconeIndex:
 
     def connect_to_index(self, index_name):
         """Connects to pinecone index named index_name. If the index doesn't exist, create it with name index_name"""
-        pinecone.init(api_key="7a96d287-9c61-4335-adf7-636892d6e2a5",
+        pinecone.init(api_key=PINECONE_KEY,
                       environment='us-west1-gcp')
         # check if index already exists, if not we create it
         if index_name not in pinecone.list_indexes():
