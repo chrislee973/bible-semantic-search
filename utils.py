@@ -27,7 +27,7 @@ def load_model():
 @st.cache(suppress_st_warning=True, allow_output_mutation=True)
 def load_bible():
     # bible = BibleTextFile("Bible_KJV.txt")
-    bible = BibleTextFile("Bible_KJV_No_Divide.txt")
+    bible = BibleTextFile("Bible_KJV.txt")
     return bible
 
 
