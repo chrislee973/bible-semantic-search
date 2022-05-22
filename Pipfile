@@ -12,6 +12,7 @@ sentence-transformers = "*"
 pinecone-client = "*"
 youtube-dl = "*"
 python-dotenv = "*"
+black = "*"
 
 [requires]
 python_version = "3.8"

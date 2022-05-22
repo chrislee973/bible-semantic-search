@@ -1,10 +1,9 @@
 from typing import List, Dict, Union
 
-from Pinecone_index import PineconeIndex
+from pinecone_index import PineconeIndex
 
 
 class Controller:
-
     def __init__(self, retriever_model, index: PineconeIndex):
         self.retriever_model = retriever_model
         self.index = index
@@ -32,12 +31,14 @@ class Controller:
            {'context': 'My name is Chris', 'id': '988767', 'encoding': [.86, -.99, .12]}
           ]
         """
+
         def encode_context(d):
             """
             Encodes the context for a particular dictionary of data and adds the vector embedding as an item in the dictionary
             """
-            d['encoding'] = self.get_embedding(d['context'])
+            d["encoding"] = self.get_embedding(d["context"])
             return d
+
         return list(map(encode_context, data))
 
     # INTERFACING WITH INDEX
@@ -49,16 +50,19 @@ class Controller:
           Required keys in data:
             'id' -> string
             'context' -> string
-          Optional key(s): 
+          Optional key(s):
             'start (ms)' -> int
         """
         encoded_data = self.transform_data(
-            data)  # add encoded context as a value for each dictionary in data
+            data
+        )  # add encoded context as a value for each dictionary in data
         # the original context is added as a metadata field by default. Additional metadata fields can be specified by the argument 'metadata_fields'
-        metadata_fields = ['context', *metadata_fields]
+        metadata_fields = ["context", *metadata_fields]
         # once we have the encoded data, pull the relevant fields from each context dictionary
-        upserts = [(v['id'], v['encoding'], {
-                    field: v[field] for field in metadata_fields}) for v in encoded_data]
+        upserts = [
+            (v["id"], v["encoding"], {field: v[field] for field in metadata_fields})
+            for v in encoded_data
+        ]
         self.index.upsert(upserts, namespace)
 
     def delete_namespace(self, namespace):
@@ -68,24 +72,20 @@ class Controller:
         """
         Lists all the namespaces in the current index
         """
-        return self.index.index.describe_index_stats()['namespaces']
+        return self.index.index.describe_index_stats()["namespaces"]
 
     def get_pinecone_embedding_dims(self):
         """
         Queries the Pinecone index for the embedding dimensions
         """
-        return self.index.index.describe_index_stats()['dimension']
+        return self.index.index.describe_index_stats()["dimension"]
 
-    # def grab_contexts(self, results: Dict) -> List[str]:
-    #       """
-    #       Returns the contexts associated with each returned result when the query() method is called
-    #       """
-    #       return [x['metadata']['context'] for x in results['results'][0]['matches']]
-
-    def query(self, query: str, top_k=5, namespace=None, verbose=False) -> Union[List[Dict], List[str]]:
+    def query(
+        self, query: str, top_k=5, namespace=None, verbose=False
+    ) -> Union[List[Dict], List[str]]:
         """
         Returns the the top k most similar contexts to the query in the Pinecone index, ranked in decreasing order of similarity.
-        If verbose is false, will only return the contexts. 
+        If verbose is false, will only return the contexts.
         If verbose is true, will return the scores, id, and other metadata (such as start timestamp for media documents) as well.
 
         Example return object when verbose =  True:
@@ -126,17 +126,8 @@ class Controller:
         # results =  self.retriever.query(self.index, query_emb, top_k, namespace)
         results = self.index.query(query_emb, top_k, namespace)
         if verbose:
-            return results['results'][0]['matches']
+            return results["results"][0]["matches"]
         elif verbose == False:
             # return self.retriever.grab_contexts(results)
             # return only the context for each result
-            return [x['metadata']['context'] for x in results['results'][0]['matches']]
-
-    # # INTERFACING WITH READER
-    # def answer_question(self, query, top_k=5, namespace=None):
-    #   """
-    #   This function combines the calling of retriever.query() and then reader.answer_question().
-    #   Results are ranked in decreasing score
-    #   """
-    #   contexts = self.query(query, top_k, namespace=namespace) # list of most relevant contexts
-    #   return self.reader.answer_question(query, contexts)
+            return [x["metadata"]["context"] for x in results["results"][0]["matches"]]
