@@ -2,7 +2,8 @@ import streamlit as st
 
 from pinecone_index import PineconeIndex
 from controller import Controller
-from bible_text_file import BIBLE_BOOK_MAPPING
+
+# from bible import BIBLE_BOOK_MAPPING
 from utils import *
 
 
@@ -17,9 +18,6 @@ if "num_suggested_results_to_display" not in st.session_state:
 
 st.title("Bible Semantic Search")
 
-# cols = st.columns((1, 1))
-# query = cols[0].text_input(label="Entery query")
-# submit = cols[1].button("Search")
 query = st.text_input(label="Enter query")
 submit = st.button("Search")
 
@@ -28,17 +26,17 @@ if (submit or query) and query != "":
     if "query" not in st.session_state:
         st.session_state.query = query
     # perform keyword search
-    results = full_text_search(bible, query)
-    st.subheader("Full text search results")
-    st.write(
-        f"Found {len(results)} search {'result' if len(results) == 1 else 'results'} for **{query}**"
-    )
-    for loc, verse in results:
-        # book_title, chapter_num, and verse_num are all strings
-        book_title, chapter_num, verse_num = loc.split(":")
-        st.write(
-            f"**{BIBLE_BOOK_MAPPING[book_title]} {chapter_num.lstrip('0')}:{verse_num.lstrip('0')}**  - {verse}"
-        )
+    # results = full_text_search(bible, query)
+    # st.subheader("Full text search results")
+    # st.write(
+    #     f"Found {len(results)} search {'result' if len(results) == 1 else 'results'} for **{query}**"
+    # )
+    # for loc, verse in results:
+    #     # book_title, chapter_num, and verse_num are all strings
+    #     book_title, chapter_num, verse_num = loc.split(":")
+    #     st.write(
+    #         f"**{BIBLE_BOOK_MAPPING[book_title]} {chapter_num.lstrip('0')}:{verse_num.lstrip('0')}**  - {verse}"
+    #     )
 
     # perform semantic search
     if query != st.session_state.query:

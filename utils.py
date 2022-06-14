@@ -2,7 +2,7 @@ import streamlit as st
 import re
 from sentence_transformers import SentenceTransformer
 
-from bible_text_file import BibleTextFile
+from bible import Bible
 
 
 def query_in_context(query, context):
@@ -14,7 +14,7 @@ def query_in_context(query, context):
 
 
 @st.cache(suppress_st_warning=True, allow_output_mutation=True)
-def full_text_search(bibleObj, query):
+def full_text_search(bibleObj: Bible, query):
     return bibleObj.get_verses(query)
 
 
@@ -26,8 +26,8 @@ def load_model():
 
 @st.cache(suppress_st_warning=True, allow_output_mutation=True)
 def load_bible():
-    # bible = BibleTextFile("Bible_KJV.txt")
-    bible = BibleTextFile("Bible_KJV.txt")
+    # bible = Bible("Bible_KJV.txt")
+    bible = Bible("Bible_KJV.txt")
     return bible
 
 

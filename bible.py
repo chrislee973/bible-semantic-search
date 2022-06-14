@@ -70,7 +70,7 @@ BIBLE_BOOK_MAPPING = {
 }
 
 
-class BibleTextFile:
+class Bible:
     def __init__(self, fpath):
         with open(fpath) as f:
             text = f.read()
