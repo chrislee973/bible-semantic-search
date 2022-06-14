@@ -9,7 +9,8 @@ from utils import *
 
 bible = load_bible()
 retriever_model = load_model()
-index = PineconeIndex("qa-index")
+# index = PineconeIndex("qa-index")
+index = load_pinecone_index()
 controller = Controller(retriever_model, index)
 
 # init session state

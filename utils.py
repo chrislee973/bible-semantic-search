@@ -2,6 +2,7 @@ import streamlit as st
 import re
 from sentence_transformers import SentenceTransformer
 
+from pinecone_index import PineconeIndex
 from bible import Bible
 
 
@@ -22,6 +23,12 @@ def full_text_search(bibleObj: Bible, query):
 def load_model():
     retriever_model = SentenceTransformer("multi-qa-MiniLM-L6-cos-v1")
     return retriever_model
+
+
+@st.cache(allow_output_mutation=True)
+def load_pinecone_index():
+    index = PineconeIndex("qa-index")
+    return index
 
 
 @st.cache(suppress_st_warning=True, allow_output_mutation=True)
