@@ -27,7 +27,7 @@ def load_model():
 
 @st.cache(allow_output_mutation=True)
 def load_pinecone_index():
-    index = PineconeIndex("qa-index")
+    index = PineconeIndex("qa-index-recovered")
     return index
 
 

@@ -16,7 +16,7 @@ class Controller:
         """
         return self.retriever_model.encode(x).tolist()
 
-    def transform_data(self, data):
+    def transform_data(self, data: List[Dict]):
         """
         Adds the encoding of the context to each dictionary in data and adds the encoding as a value to each dict item (each item representing a specific context) in the data list of dicts.
         Returns this new modified list of dictionaries. Modifies in-place
